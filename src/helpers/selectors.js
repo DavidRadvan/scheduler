@@ -15,3 +15,16 @@ export function getAppointmentsForDay(state, day) {
 
   return result;
 }
+
+export function getInterview(state, interview) {
+
+  if (interview === null) {
+    return null;
+  }
+
+  for (let key in state.interviewers) {
+    if (state.interviewers[key].id === interview.interviewer) {
+      return {...interview, interviewer: state.interviewers[key]}
+    }
+  }
+}
