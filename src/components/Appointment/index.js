@@ -32,7 +32,7 @@ return (
   {mode === CREATE && (
   <Form
     name=""
-    interviewers={[]}
+    interviewers={props.interviewers}
     interviewer={null}
     onSave={console.log("save")}
     onCancel={() => back()}

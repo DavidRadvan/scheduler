@@ -9,12 +9,14 @@ export default function useVisualMode(initial) {
       history.pop();
     }
     history.push(mode);
+    setHistory(history);
     setMode(mode);
   }
 
   function back() {
     if(history.length > 1) {
       history.pop();
+      setHistory(history);
       setMode(history[history.length - 1]);
     }
   }

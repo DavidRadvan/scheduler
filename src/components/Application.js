@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAppointmentsForDay, getInterview } from "helpers/selectors";
+import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "helpers/selectors";
 
 import "components/Application.scss";
 import DayList from "components/DayList";
@@ -53,12 +53,15 @@ alt="Lighthouse Labs"
       <section className="schedule">
         {dailyAppointments.map(appointment => {
           const interview = getInterview(state, appointment.interview);
+          console.log(getInterviewersForDay(state, state.day))
+          const interviewersForDay = getInterviewersForDay(state, state.day)
 
           return (<Appointment
             key={appointment.id}
             id={appointment.id}
             time={appointment.time}
             interview={interview}
+            interviewers={interviewersForDay}
           />
         );
       })}
