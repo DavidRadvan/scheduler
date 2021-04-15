@@ -6,7 +6,6 @@ import Appointment from "components/Appointment";
 
 const axios = require('axios');
 
-
 const appointments = [
   {
     id: 1,
@@ -23,41 +22,21 @@ const appointments = [
         avatar: "https://i.imgur.com/LpaY82x.png",
       }
     }
-  },
-  {
-    id: 3,
-    time: "10am",
-    interview: {
-      student: "David Radvan",
-      interviewer: {
-        id: 2,
-        name: "Teacher Teacherson",
-        avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
-  },
-  {
-    id: 4,
-    time: "3pm",
-    interview: {
-      student: "Student Studerson",
-      interviewer: {
-        id: 1,
-        name: "Teacher Teacherson",
-        avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
-  },
-  {
-    id: 5,
-    time: "4pm",
   }
 ];
 
+
 export default function Application(props) {
 
-  const [day, setDay] = useState(['Monday']);
-  const [days, setDays] = useState([]);
+  const [state, setState] = useState({
+    day: "Monday",
+    days: [],
+    appointments: {}
+  });
+
+  const setDay = day => setState({ ...state, day });
+
+  const setDays = days => setState(prev => ({ ...prev, days }));
 
   useEffect(() => {
     axios.get("/api/days").then((response) => {
@@ -75,8 +54,8 @@ alt="Interview Scheduler"
 />
 <hr className="sidebar__separator sidebar--centered" />
 <nav className="sidebar__menu"><DayList
-  days={days}
-  day={day}
+  days={state.days}
+  day={state.day}
   setDay={setDay}
 /></nav>
 <img
