@@ -32,6 +32,7 @@ export default function useApplicationData(initial) {
 
   const setDay = day => dispatch({ type: SET_DAY, value: day});
 
+  // bookInterview creates a new interview for the given appointment id
   function bookInterview(id, interview) {
 
     const appointment = {
@@ -57,6 +58,7 @@ export default function useApplicationData(initial) {
   })
   }
 
+// cancelInterview cancels an interview for the given appointment id
   function cancelInterview(id) {
 
     const appointment = {
@@ -75,6 +77,7 @@ export default function useApplicationData(initial) {
       })
   }
 
+// loads data from server to client
   useEffect(() => {
     Promise.all([
       axios.get('api/days'),
@@ -85,6 +88,46 @@ export default function useApplicationData(initial) {
     })
   }, []);
 
+// configures webSocket
+  useEffect(() => {
+    const webSocket = new WebSocket('ws://localhost:8001');
+    webSocket.onopen = function(event) {
+      webSocket.send("ping");
+    };
+    webSocket.onmessage = function(event) {
+      const msg = JSON.parse(event.data);
+
+      if (msg.type === "SET_INTERVIEW") {
+        if (msg.interview === null) {
+          const appointment = {
+            ...state.appointments[msg.id],
+            interview: null
+          };
+
+          const appointments = {
+            ...state.appointments,
+            [msg.id]: appointment
+          };
+
+          dispatch({ type: SET_INTERVIEW, value: appointments});
+
+        } else {
+          const appointment = {
+            ...state.appointments[msg.id],
+            interview: {...msg.interview}
+          };
+
+          const appointments = {
+            ...state.appointments,
+            [msg.id]: appointment
+          };
+          dispatch({ type: SET_INTERVIEW, value: appointments});
+        }
+      }
+    };
+  }, []);
+
+// refreshes days data when appointments change, used to update spots
   useEffect(() => {
     axios.get('api/days')
     .then((response) => {
