@@ -20,6 +20,32 @@ export default function Application(props) {
 
   const setDay = day => setState({ ...state, day });
 
+  function bookInterview(id, interview) {
+
+    const appointment = {
+      ...state.appointments[id],
+      interview: {...interview}
+    };
+
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+
+    return axios.put(`/api/appointments/${id}`, {
+    id: appointment.id,
+    time: appointment.time,
+    interview: {
+      student: appointment.interview.student,
+      interviewer: appointment.interview.interviewer,
+    },
+  })
+  .then((response) => {
+    setState({...state, appointments});
+  });
+
+  }
+
   useEffect(() => {
     Promise.all([
       axios.get('api/days'),
@@ -53,7 +79,6 @@ alt="Lighthouse Labs"
       <section className="schedule">
         {dailyAppointments.map(appointment => {
           const interview = getInterview(state, appointment.interview);
-          console.log(getInterviewersForDay(state, state.day))
           const interviewersForDay = getInterviewersForDay(state, state.day)
 
           return (<Appointment
@@ -62,6 +87,7 @@ alt="Lighthouse Labs"
             time={appointment.time}
             interview={interview}
             interviewers={interviewersForDay}
+            bookInterview={bookInterview}
           />
         );
       })}
