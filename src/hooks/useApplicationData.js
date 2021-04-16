@@ -7,6 +7,7 @@ export default function useApplicationData(initial) {
   const SET_DAY = "SET_DAY";
   const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
   const SET_INTERVIEW = "SET_INTERVIEW";
+  const UPDATE_SPOTS = "UPDATE_SPOTS";
 
   function reducer(state, action) {
     switch (action.type) {
@@ -16,6 +17,9 @@ export default function useApplicationData(initial) {
         return {...state, days: action.dayValue, appointments: action.appointmentsValue, interviewers: action.interviewersValue };
       case SET_INTERVIEW: {
         return { ...state, appointments: action.value }
+      }
+      case UPDATE_SPOTS: {
+        return { ...state, days: action.value }
       }
       default:
         throw new Error(
@@ -81,12 +85,12 @@ export default function useApplicationData(initial) {
     })
   }, []);
 
-  // useEffect(() => {
-  //   axios.get('api/days')
-  //   .then((response) => {
-  //     setState(prev => ({...prev, days: response.data}));
-  //   })
-  // }, [state.appointments]);
+  useEffect(() => {
+    axios.get('api/days')
+    .then((response) => {
+      dispatch({ type: UPDATE_SPOTS, value: response.data});
+    })
+  }, [state.appointments]);
 
   return { state, setDay, bookInterview, cancelInterview };
 }
