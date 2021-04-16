@@ -8,6 +8,7 @@ export default function useApplicationData(initial) {
   const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
   const SET_INTERVIEW = "SET_INTERVIEW";
   const UPDATE_SPOTS = "UPDATE_SPOTS";
+  const WEBSOCKET_UPDATE = "WEBSOCKET_UPDATE";
 
   function reducer(state, action) {
     switch (action.type) {
@@ -20,6 +21,36 @@ export default function useApplicationData(initial) {
       }
       case UPDATE_SPOTS: {
         return { ...state, days: action.value }
+      }
+      case WEBSOCKET_UPDATE: {
+        if (action.valueInterview === null) {
+
+          const appointment = {
+            ...state.appointments[action.valueId],
+            interview: null
+          };
+
+          const appointments = {
+            ...state.appointments,
+            [action.valueId]: appointment
+          };
+
+          return { ...state, appointments: appointments }
+
+        } else {
+
+          const appointment = {
+            ...state.appointments[action.valueId],
+            interview: {...action.valueInterview}
+          };
+
+          const appointments = {
+            ...state.appointments,
+            [action.valueId]: appointment
+          };
+
+          return { ...state, appointments: appointments }
+        }
       }
       default:
         throw new Error(
@@ -90,41 +121,17 @@ export default function useApplicationData(initial) {
 
 // configures webSocket
   useEffect(() => {
-    const webSocket = new WebSocket('ws://localhost:8001');
-    webSocket.onopen = function(event) {
-      webSocket.send("ping");
-    };
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
     webSocket.onmessage = function(event) {
+
       const msg = JSON.parse(event.data);
 
       if (msg.type === "SET_INTERVIEW") {
-        if (msg.interview === null) {
-          const appointment = {
-            ...state.appointments[msg.id],
-            interview: null
-          };
-
-          const appointments = {
-            ...state.appointments,
-            [msg.id]: appointment
-          };
-
-          dispatch({ type: SET_INTERVIEW, value: appointments});
-
-        } else {
-          const appointment = {
-            ...state.appointments[msg.id],
-            interview: {...msg.interview}
-          };
-
-          const appointments = {
-            ...state.appointments,
-            [msg.id]: appointment
-          };
-          dispatch({ type: SET_INTERVIEW, value: appointments});
-        }
+        dispatch({ type: WEBSOCKET_UPDATE, valueId: msg.id, valueInterview: msg.interview});
       }
-    };
+      
+    }
   }, []);
 
 // refreshes days data when appointments change, used to update spots
