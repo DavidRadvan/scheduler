@@ -42,6 +42,10 @@ export default function Appointment(props) {
       interviewer
     };
 
+    if (interview.interviewer === null) {
+      return;
+    }
+
     transition(SAVING);
     props.bookInterview(props.id, interview)
       .then(() => transition(SHOW))
