@@ -117,6 +117,7 @@ export default function useApplicationData(initial) {
     ]).then((all) => {
       dispatch({ type: SET_APPLICATION_DATA, dayValue: all[0].data, appointmentsValue: all[1].data, interviewersValue: all[2].data});
     })
+    .catch((error) => console.log(error));
   }, []);
 
 // configures webSocket
@@ -130,7 +131,7 @@ export default function useApplicationData(initial) {
       if (msg.type === "SET_INTERVIEW") {
         dispatch({ type: WEBSOCKET_UPDATE, valueId: msg.id, valueInterview: msg.interview});
       }
-      
+
     }
   }, []);
 
