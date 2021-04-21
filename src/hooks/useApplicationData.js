@@ -75,7 +75,7 @@ export default function useApplicationData(initial) {
 
 // configures webSocket
   useEffect(() => {
-    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8001');
 
     webSocket.onmessage = function(event) {
 
